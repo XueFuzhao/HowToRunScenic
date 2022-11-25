@@ -103,7 +103,10 @@ Then, setup the TPU VM:
 
     where `TPU_NAME` and `ZONE` are the name and the zone used above.
 
-4.  Install the dependencies, one great way is installing t5x first. Most environment used in Scenic would be covered by that.
+
+## Run your code on the TPU VM:
+
+1.  Install the dependencies, one great way is installing t5x first. Most environment used in Scenic would be covered by that.
 
     ```sh
     git clone --branch=main https://github.com/google-research/t5x
@@ -113,6 +116,35 @@ Then, setup the TPU VM:
       https://storage.googleapis.com/jax-releases/libtpu_releases.html
 
     ```
+
+2. Install Scenic and Run
+
+    ```sh
+    git clone --branch=main https://github.com/YOUR_GITHUB_NAME/scenic.git
+    cd scenic
+    pip install .
+
+    export WORK_DIR=gs://fuzhao/scenic/mnist
+    python3 scenic/main.py \
+      --config=scenic/projects/baselines/configs/mnist/mnist_config.py \
+      --workdir=$WORK_DIR
+
+    ```
+## Run on multi-host TPU VMs
+
+Sometimes, we may conduct larger scale experiments with more TPU chips (e.g. v3-128) for larger datasets like ImageNet. In this case, we can run the code in this way:
+
+ 1. Combine the code in Section ``Run your code on the TPU VM`` into a single file run_scenic.sh. We provide an example in this repo.
+
+ 2. Run
+
+    ```sh
+    export TPU_NAME=v3-128
+    gcloud compute tpus tpu-vm scp run_scenic.sh $TPU_NAME: --worker=all --zone=$ZONE
+    gcloud alpha compute tpus tpu-vm ssh $TPU_NAME --zone=$ZONE --worker=all --command "bash run_t5x.sh"
+    ```
+
+
 
 
 
