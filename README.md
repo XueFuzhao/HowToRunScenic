@@ -141,7 +141,7 @@ Sometimes, we may conduct larger scale experiments with more TPU chips (e.g. v3-
     ```sh
     export TPU_NAME=v3-128
     gcloud compute tpus tpu-vm scp run_scenic.sh $TPU_NAME: --worker=all --zone=$ZONE
-    gcloud alpha compute tpus tpu-vm ssh $TPU_NAME --zone=$ZONE --worker=all --command "bash run_t5x.sh"
+    gcloud alpha compute tpus tpu-vm ssh $TPU_NAME --zone=$ZONE --worker=all --command "bash run_scenic.sh"
     ```
 
 
