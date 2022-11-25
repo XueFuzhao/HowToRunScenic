@@ -9,7 +9,7 @@ git clone https://github.com/YOUR_GITHUB_NAME/scenic.git
 cd scenic
 pip install .
 
-export WORK_DIR=gs://YOUR_BUDGET/scenic/mnist
+export WORK_DIR=gs://${GOOGLE_CLOUD_BUCKET_NAME}/scenic/mnist
 python3 scenic/main.py \
   --config=scenic/projects/baselines/configs/mnist/mnist_config.py \
   --workdir=$WORK_DIR
