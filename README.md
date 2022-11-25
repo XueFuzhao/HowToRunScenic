@@ -10,12 +10,12 @@ Before all, please fork the Scenic repo. And the you can edit your forked scenic
 
 Frist, edit the get_dataset() function in [dataset_lib/mnist_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/mnist_dataset.py)
 
-Step 1 remove:
+1.  remove:
 ```
 del dataset_configs
 ```
 
-Step 2 pass dataset_configs.data_dir to dataset_builder:
+2. pass dataset_configs.data_dir to dataset_builder:
 ```
   train_ds, train_ds_info = dataset_utils.load_split_from_tfds(
       'mnist',
@@ -27,8 +27,7 @@ Step 2 pass dataset_configs.data_dir to dataset_builder:
 )
 ```
 
-
-Step 3 do similar thing for eval_ds:
+3. do similar thing for eval_ds:
 
 ```
   eval_ds, _ = dataset_utils.load_split_from_tfds(
@@ -39,7 +38,7 @@ Step 3 do similar thing for eval_ds:
 )
 ```
 
-Step 4 add data_dir in config file, we assume we want to use [scenic/projects/baselines/configs/mnist/mnist_config.py](https://github.com/XueFuzhao/scenic/blob/main/scenic/projects/baselines/configs/mnist/mnist_config.py) for later training:
+4.  add data_dir in config file, we assume we want to use [scenic/projects/baselines/configs/mnist/mnist_config.py](https://github.com/XueFuzhao/scenic/blob/main/scenic/projects/baselines/configs/mnist/mnist_config.py) for later training:
 
 ```
   # Dataset.
@@ -54,3 +53,72 @@ Okay, the code is ready now :). For other datasets like ImageNet, we can follow 
 
 ## Setup the environment.
 
+Please make sure you set your gcloud configs first:
+
+1. [Create](https://console.cloud.google.com/) a GCP project.
+
+2. [Install](https://cloud.google.com/sdk/docs/install) `gcloud`.
+
+3. Associate your Google Account (Gmail account) with your GCP project by
+   running:
+
+   ```bash
+   export GCP_PROJECT=<GCP PROJECT ID>
+   gcloud auth login
+   gcloud auth application-default login
+   gcloud config set project $GCP_PROJECT
+   ```
+
+4. Create a staging bucket if you do not already have one. We use europe-west4-a as an example:
+
+   ```bash
+   export GOOGLE_CLOUD_BUCKET_NAME=<GOOGLE_CLOUD_BUCKET_NAME>
+   gsutil mb -l europe-west4-a gs://$GOOGLE_CLOUD_BUCKET_NAME
+   ```
+
+Note that all the commands in this document should be run in the commandline of
+the TPU VM instance unless otherwise stated.
+
+1.  Follow the
+    [instructions](https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#install_the_google_cloud_sdk)
+    to set up a Google Cloud Platform (GCP) account and enable the Cloud TPU
+    API.
+
+    **Note:** While T5X works with GPU as well, we haven't heavily tested the
+    GPU usage.
+
+2.  Create a
+    [Cloud TPU VM instance](https://cloud.google.com/blog/products/compute/introducing-cloud-tpu-vms)
+    following
+    [this instruction](https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#create-vm).
+    We recommend that you develop your workflow in a single v3-8 TPU (i.e.,
+    `--accelerator-type=v3-8`) and scale up to pod slices once the pipeline is
+    ready. In this README, we focus on using a single v3-8 TPU. See
+    [here](https://cloud.google.com/tpu/docs/system-architecture-tpu-vm) to
+    learn more about TPU architectures.
+
+3.  With Cloud TPU VMs, you ssh directly into the host machine of the TPU VM.
+    You can install packages, run your code run, etc. in the host machine. Once
+    the TPU instance is created, ssh into it with
+
+    ```sh
+    gcloud alpha compute tpus tpu-vm ssh ${TPU_NAME} --zone=${ZONE}
+    ```
+
+    where `TPU_NAME` and `ZONE` are the name and the zone used in step 2.
+
+4.  Install T5X and the dependencies.
+
+    ```sh
+    git clone --branch=main https://github.com/google-research/t5x
+    cd t5x
+
+    python3 -m pip install -e '.[tpu]' -f \
+      https://storage.googleapis.com/jax-releases/libtpu_releases.html
+
+    ```
+
+
+5.  Create Google Cloud Storage (GCS) bucket to store the dataset and model
+    checkpoints. To create a GCS bucket, see these
+    [instructions](https://cloud.google.com/storage/docs/creating-buckets).
