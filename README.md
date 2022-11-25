@@ -6,6 +6,8 @@ This repo is to help the Google Cloud Users to run one awesome JAX-based compute
 
 We need some small modifications to make Scenic more friendly to the Google Cloud Users. The Scenic repo always uses the default dataset dir. However, for Google Cloud Users or other GPU users, the dataset location may be different. For instance, the Google Cloud Users usually store their dataset on Google Cloud Storage Budget. Therefore, we should edit the dataset loading function in Scenic. We use the Mnist dataset as example here. 
 
+Before all, please fork the Scenic repo. And the you can edit your forked scenic repo.
+
 Frist, edit the get_dataset() function in [dataset_lib/mnist_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/mnist_dataset.py)
 
 Step 1 remove:
@@ -47,4 +49,8 @@ Step 4 add data_dir in config file, we assume we want to use [scenic/projects/ba
   config.data_dtype_str = 'float32'
 ```
 
-Okay, the code is ready now :)
+Okay, the code is ready now :). For other datasets like ImageNet, we can follow the same steps as above.
+
+
+## Setup the environment.
+
