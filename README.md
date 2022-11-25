@@ -38,7 +38,7 @@ del dataset_configs
 )
 ```
 
-4.  add data_dir in config file, we assume we want to use [scenic/projects/baselines/configs/mnist/mnist_config.py](https://github.com/XueFuzhao/scenic/blob/main/scenic/projects/baselines/configs/mnist/mnist_config.py) for later training:
+4.  add data_dir in config file, we assume we want to use [scenic/projects/baselines/configs/mnist/mnist_config.py](https://github.com/YOUR_GITHUB_NAME/scenic/blob/main/scenic/projects/baselines/configs/mnist/mnist_config.py) for later training:
 
 ```
   # Dataset.
@@ -124,7 +124,7 @@ Then, setup the TPU VM:
     cd scenic
     pip install .
 
-    export WORK_DIR=gs://fuzhao/scenic/mnist
+    export WORK_DIR=gs://${GOOGLE_CLOUD_BUCKET_NAME}/scenic/mnist
     python3 scenic/main.py \
       --config=scenic/projects/baselines/configs/mnist/mnist_config.py \
       --workdir=$WORK_DIR
