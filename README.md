@@ -10,7 +10,7 @@ Before all, please fork the Scenic repo. And the you can edit your forked scenic
 
 Frist, edit the get_dataset() function in [dataset_lib/mnist_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/mnist_dataset.py)
 
-1.  remove:
+1.  remove this line of code (sometimes we do not need this since Scenic only have this line of code for a part of XXX_dataset.py):
 ```
 del dataset_configs
 ```
