@@ -53,6 +53,9 @@ Okay, the code is ready now :). For other datasets like ImageNet, we can follow 
 
 ## Setup the environment.
 
+Note that all the commands in this document should be run in the commandline of
+the TPU VM instance unless otherwise stated.
+
 Please make sure you set your gcloud configs first:
 
 1. [Create](https://console.cloud.google.com/) a GCP project.
@@ -73,21 +76,13 @@ Please make sure you set your gcloud configs first:
 
    ```bash
    export GOOGLE_CLOUD_BUCKET_NAME=<GOOGLE_CLOUD_BUCKET_NAME>
-   gsutil mb -l europe-west4-a gs://$GOOGLE_CLOUD_BUCKET_NAME
+   export ZONE=europe-west4-a
+   gsutil mb -l $ZONE gs://$GOOGLE_CLOUD_BUCKET_NAME
    ```
 
-Note that all the commands in this document should be run in the commandline of
-the TPU VM instance unless otherwise stated.
+Then, setup the TPU VM:
 
-1.  Follow the
-    [instructions](https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#install_the_google_cloud_sdk)
-    to set up a Google Cloud Platform (GCP) account and enable the Cloud TPU
-    API.
-
-    **Note:** While T5X works with GPU as well, we haven't heavily tested the
-    GPU usage.
-
-2.  Create a
+1.  Create a
     [Cloud TPU VM instance](https://cloud.google.com/blog/products/compute/introducing-cloud-tpu-vms)
     following
     [this instruction](https://cloud.google.com/tpu/docs/jax-quickstart-tpu-vm#create-vm).
@@ -97,17 +92,18 @@ the TPU VM instance unless otherwise stated.
     [here](https://cloud.google.com/tpu/docs/system-architecture-tpu-vm) to
     learn more about TPU architectures.
 
-3.  With Cloud TPU VMs, you ssh directly into the host machine of the TPU VM.
+2.  With Cloud TPU VMs, you ssh directly into the host machine of the TPU VM.
     You can install packages, run your code run, etc. in the host machine. Once
     the TPU instance is created, ssh into it with
 
     ```sh
+    export TPU_NAME=v3-8
     gcloud alpha compute tpus tpu-vm ssh ${TPU_NAME} --zone=${ZONE}
     ```
 
-    where `TPU_NAME` and `ZONE` are the name and the zone used in step 2.
+    where `TPU_NAME` and `ZONE` are the name and the zone used above.
 
-4.  Install T5X and the dependencies.
+4.  Install the dependencies, one great way is installing t5x first. Most environment used in Scenic would be covered by that.
 
     ```sh
     git clone --branch=main https://github.com/google-research/t5x
@@ -119,6 +115,4 @@ the TPU VM instance unless otherwise stated.
     ```
 
 
-5.  Create Google Cloud Storage (GCS) bucket to store the dataset and model
-    checkpoints. To create a GCS bucket, see these
-    [instructions](https://cloud.google.com/storage/docs/creating-buckets).
+
