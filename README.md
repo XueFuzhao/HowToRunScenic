@@ -144,6 +144,9 @@ Sometimes, we may conduct larger scale experiments with more TPU chips (e.g. v3-
     gcloud alpha compute tpus tpu-vm ssh $TPU_NAME --zone=$ZONE --worker=all --command "bash run_scenic.sh"
     ```
 
+## Last
+
+Thank you for your interest on this repo. If you found any issue when running Scenic on your own cluster, especially on Google Cloud Platform, please feel free to post an issue on this repo (preferred) or ping Fuzhao via email. I would be happy to help.
 
 
 
