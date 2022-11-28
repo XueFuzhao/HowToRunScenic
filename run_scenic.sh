@@ -1,3 +1,5 @@
+#!/bin/bash
+
 git clone --branch=main https://github.com/google-research/t5x
 cd t5x
 
