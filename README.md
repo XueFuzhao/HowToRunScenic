@@ -4,9 +4,11 @@ This repo is to help the Google Cloud Users to run one awesome JAX-based compute
 
 ## Prepare the code
 
-We need some small modifications to make Scenic more friendly to the Google Cloud Users. The Scenic repo always uses the default dataset dir. However, for Google Cloud Users or other GPU users, the dataset location may be different. For instance, the Google Cloud Users usually store their dataset on Google Cloud Storage Budget. Therefore, we should edit the dataset loading function in Scenic. We use the Mnist dataset as example here. 
+We need some small modifications to make Scenic more friendly to the Google Cloud Users. The Scenic repo always uses the default dataset dir. However, for Google Cloud Users or other GPU users, the dataset location may be different. For instance, the Google Cloud Users usually store their dataset on Google Cloud Storage Budget. Therefore, we should edit the dataset loading function in Scenic. We use MNIST and ImageNet as examples here.
 
 Before all, please fork the Scenic repo. And the you can edit your forked scenic repo.
+
+### Prepare MNIST code
 
 Frist, edit the get_dataset() function in [dataset_lib/mnist_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/mnist_dataset.py)
 
@@ -48,8 +50,67 @@ del dataset_configs
   config.data_dtype_str = 'float32'
 ```
 
-Okay, the code is ready now :). For other datasets like ImageNet, we can follow the same steps as above.
+The code for MNIST is ready now.
 
+### Prepare ImageNet code
+
+Similarly, we edit the get_dataset() function in [dataset_lib/imagenet_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/imagenet_dataset.py) to pass the data_dir into dataset_builder.
+
+1. pass dataset_configs.data_dir to imagenet_load_split for train_ds:
+
+```
+  train_ds = imagenet_load_split(
+      batch_size,
+      train=True,
+      onehot_labels=onehot_labels,
+      dtype=dtype,
+      shuffle_seed=shuffle_seed,
+      data_augmentations=data_augmentations,
+      data_dir=dataset_configs.data_dir  # added by us.
+      )
+```
+
+2. pass dataset_configs.data_dir to imagenet_load_split for eval_ds:
+
+```
+  eval_ds = imagenet_load_split(eval_batch_size, train=False,
+                                onehot_labels=onehot_labels,
+                                dtype=dtype,
+                                data_dir=dataset_configs.data_dir  # added by us
+                                )
+      )
+```
+
+3. edit imagenet_load_split function in [dataset_lib/imagenet_dataset.py](https://github.com/google-research/scenic/blob/main/scenic/dataset_lib/imagenet_dataset.py) to support data_dir arg:
+
+```
+def imagenet_load_split(batch_size,
+                        train,
+                        onehot_labels,
+                        dtype=tf.float32,
+                        image_size=IMAGE_SIZE,
+                        prefetch_buffer_size=10,
+                        shuffle_seed=None,
+                        data_augmentations=None,
+                        data_dir=None # added by us.
+                        ):
+```
+
+4. edit the code inside of imagenet_load_split func:
+
+```
+# replace dataset_builder = tfds.builder('imagenet2012:5.*.*') by:
+dataset_builder = tfds.builder('imagenet2012:5.*.*', data_dir=data_dir)
+```
+
+5. edit the config file, i.e. [projects/baselines/configs/imagenet/imagenet_vit_config.py](https://github.com/google-research/scenic/blob/main/scenic/projects/baselines/configs/imagenet/imagenet_vit_config.py)
+
+```
+  config.dataset_configs = ml_collections.ConfigDict()
+  config.dataset_configs.data_dir = 'gs://YOUR_BUDGET_NAME/imagenet' # added by us.
+```
+
+Okay, the code is ready for both MNIST and ImageNet now. If you want to try other different datasets, you can just follow these two examples. The core is to pass data_dir to tfds.builder manually.
 
 ## Setup the environment.
 
@@ -104,7 +165,7 @@ Then, setup the TPU VM:
     where `TPU_NAME` and `ZONE` are the name and the zone used above.
 
 
-## Run your code on the TPU VM:
+## Run your code on the TPU VM (for MNIST):
 
 1.  Install the dependencies, one great way is installing t5x first. Most environment used in Scenic would be covered by that.
 
@@ -130,7 +191,7 @@ Then, setup the TPU VM:
       --workdir=$WORK_DIR
 
     ```
-## Run on multi-host TPU VMs
+## Run on multi-host TPU VMs (for ImageNet):
 
 Sometimes, we may conduct larger scale experiments with more TPU chips (e.g. v3-128) for larger datasets like ImageNet. In this case, we can run the code in this way:
 
